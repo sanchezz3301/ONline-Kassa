@@ -1,2 +1,12 @@
-<img src="logo.png" alt="logo" width="48px" height="48px" align-items="center">
-<h1 text-align="center">ONline-Kassa</h1>
+<p align="center">
+  <img src="sanchezz3301.png">
+</p>
+
+<p align="center">
+  <img src="logo.png">
+</p>
+
+<p align="center">
+  <h1 text-align="center">ONline-Kassa</h1>
+</p>
+
