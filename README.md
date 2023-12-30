@@ -2,7 +2,7 @@
   <img src="sanchezz3301.png">
 </p>
 
-<p align="center">
+<p align="center" height="50px">
   <img src="logo.png">
 </p>
 
