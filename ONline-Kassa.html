@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ONline-Kassa</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #282c35;
+            color: #fff;
+        }
+
+        #barcode-scanner-container {
+            width: 70%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            box-sizing: border-box;
+            background-color: #2e323d;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+        }
+
+        #results-container {
+            width: 30%;
+            overflow-y: auto;
+            padding: 20px;
+            box-sizing: border-box;
+            background-color: #2a2a2a;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-left: 1px solid #1a1a1a;
+            border-radius: 10px;
+            margin-left: 20px;
+        }
+
+        h1, h2 {
+            color: #61dafb;
+            margin-bottom: 15px;
+        }
+
+        #barcode-scanner {
+            width: 100%;
+            max-width: 90%;
+            height: 70vh;
+            margin-top: 20px;
+            margin-left: 200px;
+            margin-bottom: 20px;
+            border: none;
+            box-shadow: none;
+            outline: none;
+            display: block;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #result-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        #result-list li {
+            font-weight: bold;
+            margin-bottom: 10px;
+            border-bottom: 1px solid #61dafb;
+            padding-bottom: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="barcode-scanner-container">
+        <h1>ONline-Kassa <img src="logo.png" alt="logo" width="48px" height="48px"></h1>
+        <div id="barcode-scanner"></div>
+    </div>
+
+    <div id="results-container">
+        <h2>Scanning Results</h2>
+        <ul id="result-list"></ul>
+        <div id="total-sum">Total: <span id="sum-value">0.00</span> AZN</div>
+    </div>
+
+    <audio id="beepAudio" src="beep.mp3"></audio>
+
+    <script src="https://unpkg.com/quagga@latest/dist/quagga.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const video = document.getElementById('barcode-scanner');
+            const resultList = document.getElementById('result-list');
+            const beepAudio = document.getElementById('beepAudio');
+            const totalSumElement = document.getElementById('sum-value');
+            let scanning = false;
+            let totalSum = 0;
+
+            const productDatabase = {
+                '3456789056757': { name: 'Product 1', price: 10.99 },
+                '9780201379624': { name: 'Product 2', price: 24.99 }
+                // ADD MORE PRODUCTS IN DATABASE
+            };
+
+            Quagga.init({
+                inputStream: {
+                    name: 'Live',
+                    type: 'LiveStream',
+                    target: video
+                },
+                decoder: {
+                    readers: ['ean_reader', 'code_128_reader']
+                }
+            }, (err) => {
+                if (err) {
+                    console.error('Quagga is not responsive:', err);
+                    return;
+                }
+                Quagga.start();
+            });
+
+            Quagga.onDetected((result) => {
+                if (!scanning) {
+                    scanning = true;
+                    const scannedCode = result.codeResult.code;
+
+                    if (productDatabase[scannedCode]) {
+                        const product = productDatabase[scannedCode];
+                        const listItem = document.createElement('li');
+                        listItem.textContent = `${product.name}, Price: ${product.price.toFixed(2)}AZN`;
+                        resultList.appendChild(listItem);
+
+                        beepAudio.play();
+                        totalSum += product.price;
+                    } else {
+                        const listItem = document.createElement('li');
+                        listItem.textContent = 'Product not found in Database';
+                        resultList.appendChild(listItem);
+                    }
+
+                    setTimeout(() => {
+                        scanning = false;
+                    }, 2000);
+                }
+            });
+
+            Quagga.onProcessed((result) => {
+                if (result && !Quagga.onDetecting) {
+                    Quagga.onDetecting = true;
+                    setTimeout(() => {
+                        Quagga.onDetecting = false;
+                        Quagga.start();
+                    }, 1000);
+                }
+            });
+
+            const adjustScannerSize = () => {
+                const videoWidth = video.offsetWidth;
+                const videoHeight = video.offsetHeight;
+                video.style.width = videoWidth + 'px';
+                video.style.height = videoHeight + 'px';
+            };
+
+            window.addEventListener('resize', adjustScannerSize);
+            adjustScannerSize();
+
+            // Update the total sum display
+            function updateTotalSum() {
+                totalSumElement.textContent = totalSum.toFixed(2);
+            }
+
+            // Periodically check for changes in total sum
+            setInterval(updateTotalSum, 1000);
+        });
+    </script>
+</body>
+
+</html>
