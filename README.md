@@ -1,3 +1,3 @@
 
-<img src="logo.png" alt="logo" width="48px" height="48px">
+<img src="logo.png" alt="logo" width="48px" height="48px" align-items="center">
 <h1>ONline-Kassa</h1>
