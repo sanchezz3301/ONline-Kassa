@@ -2,8 +2,8 @@
   <img src="sanchezz3301.png">
 </p>
 
-<p align="center" height="50px" weight="50px">
-  <img src="logo.png">
+<p align="center">
+  <img src="logo.png"  height="50px" weight="50px">
 </p>
 
 <p align="center">
