@@ -1,5 +1,5 @@
 <p align="center">
-  <h1>ONline-Kassa</h1>
+  <h1>ON-Kassa</h1>
 </p>
 
 <p align="center">
